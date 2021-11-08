@@ -690,7 +690,7 @@ void loop() {
       // only runs once
       Serial.println("Unhooking winch");
       Serial.println(a);
-      Servo1.write(180);
+      Servo1.write(0);
       Servo2.write(180);
       delay(1000);
       Servo2.write(90);
