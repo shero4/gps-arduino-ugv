@@ -1,7 +1,12 @@
+#! /usr/bin/python3
+
 import serial
 import time
+import sys
 
-rfd900 = serial.Serial(port="/dev/tty.usbserial-1110", baudrate=57600, timeout=1)
+ttyPort = "/dev/" + str(sys.argv[1])
+
+rfd900 = serial.Serial(port=ttyPort, baudrate=57600, timeout=1)
 time.sleep(3)
 
 def winchDrop():
@@ -35,10 +40,21 @@ def manualControl():
         elif(command == '5'):
             print("Stop Car")
             rfd900.write(bytes('5\n', 'utf-8'))
-        elif(command == '11'):
+        elif(command == '6'):
             print("GPS Info")
-            rfd900.write(bytes('11\n', 'utf-8'))
+            rfd900.write(bytes('6\n', 'utf-8'))
             data = (rfd900.readline()).decode('utf-8')
             print(data)
-    
-writeRandomData()
+        elif(command == '7'):
+            print("Compass Left")
+            rfd900.write(bytes('7\n', 'utf-8'))
+        elif(command == '8'):
+            print("Compass Right")
+            rfd900.write(bytes('8\n', 'utf-8'))
+        elif(command == '9'):
+            print("Go to waypoint")
+            rfd900.write(bytes('9\n', 'utf-8'))
+            while True:
+                print(rfd900.readline().decode('utf-8'))
+            
+manualControl()
