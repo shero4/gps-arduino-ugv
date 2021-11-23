@@ -25,8 +25,37 @@ def writeRandomData():
 
 def getTelemetry():
     while True:
-        print(rfd900.readline().decode('utf-8'))
-           
+        if(rfd900.inWaiting() > 0):
+            try:
+                telem = rfd900.readline().decode('utf-8')
+                print(telem)
+                if "#" in telem:
+                    telem = telem.split("#")
+                    print(telem)
+                    distance_to_destination = telem[0]
+                    desired_heading = telem[1]
+                    ugv_heading = telem[6]
+                    current_lat = telem[2]
+                    current_lon = telem[3]
+                    destination_lat = telem[4]
+                    destination_lon = telem[5]
+                    compass_heading = telem[-1]
+                    print("Distance to destination: " + distance_to_destination)
+                    print("Desired heading: " + desired_heading)
+                    print("UGV heading: " + ugv_heading)
+                    print("Current lat: " + current_lat)
+                    print("Current lon: " + current_lon)
+                    print("Destination lat: " + destination_lat)
+                    print("Destination lon: " + destination_lon)
+                    print("Compass heading: " + compass_heading)
+                else:
+                    print(telem)
+
+            except:
+                print("Error")
+
+            
+
 
 def manualControl(): 
     while True:
