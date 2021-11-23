@@ -34,15 +34,13 @@ def getTelemetry():
                     print(telem)
                     distance_to_destination = telem[0]
                     desired_heading = telem[1]
-                    ugv_heading = telem[6]
-                    current_lat = telem[2]
-                    current_lon = telem[3]
-                    destination_lat = telem[4]
-                    destination_lon = telem[5]
+                    current_lat = telem[3]
+                    current_lon = telem[4]
+                    destination_lat = telem[5]
+                    destination_lon = telem[6]
                     compass_heading = telem[-1]
                     print("Distance to destination: " + distance_to_destination)
                     print("Desired heading: " + desired_heading)
-                    print("UGV heading: " + ugv_heading)
                     print("Current lat: " + current_lat)
                     print("Current lon: " + current_lon)
                     print("Destination lat: " + destination_lat)
