@@ -27,7 +27,7 @@ int Number_of_SATS;
 TinyGPSPlus gps;
 
 // GPS Action stuff
-unsigned long Distance_To_Home;
+unsigned long Distance_To_Home;                              
 int ac = 0;
 int wpCount = 0;
 double Home_LATarray[50];
@@ -47,12 +47,12 @@ Servo Servo2;
 // Motor stuff
 int mtr_Spd = 130;
 int turn_speed = 255;
-const int IN1 = 4;
-const int IN2 = 5;
-const int IN3 = 6;
-const int IN4 = 7;
-const int ENA = 8;
-const int ENB = 9;
+const int IN1 = 2;
+const int IN2 = 3;
+const int IN3 = 4;
+const int IN4 = 5;
+const int ENA = 6;
+const int ENB = 7;
 
 void getGPS()  // Get Latest GPS coordinates
 {
@@ -145,12 +145,12 @@ void setup() {
   delay(2000);
   mpu.setup(0x68);
   Serial3.println("Calibrating IMU");
-//  Serial.println("Calibrating IMU");
+  Serial.println("Calibrating IMU");
   delay(1000);
   //  mpu.calibrateAccelGyro();
   mpu.calibrateMag();
   Serial3.println("Starting up");
-  Startup();
+//  Startup();
 
 }
 
@@ -169,6 +169,8 @@ void getCompass() {
       heading += 2 * M_PI;
     compass_heading = (int)(heading * 180 / M_PI);
     compass_heading = abs(compass_heading - 360);
+
+    compass_heading = (compass_heading + 90) % 360;
     //    compass_heading = (((int)mpu.getYaw() + 180) + 90) % 360;
     // End of line
     Serial.println((compass_heading));
@@ -548,18 +550,33 @@ void goWaypoint() {
       Serial3.println("FORWARD");
 //      Forward();  // Go Forward
     } else {
-      int x = (GPS_Course - 360);       // x = the GPS desired heading - 360
-      int y = (compass_heading - (x));  // y = the Compass heading - x
-      int z = (y - 360);                // z = y - 360
-      Serial.println(z);
-      if ((z <= 180) && (z >= 0))  // if z is less than 180 and not a negative value then turn left otherwise turn right
-      {
-        Serial3.println("LEFT");
-//        SlowLeftTurn();
-      } else {
-        Serial3.println("RIGHT");
-//        SlowRightTurn();
-      }
+//      int x = (GPS_Course - 360);       // x = the GPS desired heading - 360
+//      int y = (compass_heading - (x));  // y = the Compass heading - x
+//      int z = (y - 360);                // z = y - 360
+//      Serial.println(z);
+     
+//      if ((z <= 180) && (z >= 0))  // if z is less than 180 and not a negative value then turn left otherwise turn right
+//      {
+//        Serial3.println("LEFT");
+////        SlowLeftTurn();
+//      } else {
+//        Serial3.println("RIGHT");
+////        SlowRightTurn();
+//      }
+
+
+       int x = abs(compass_heading - (360 - GPS_Course))%360
+
+       if((x <= 180)){
+          Serial3.println("Turning LEFT");
+          SlowLeftTurn();
+       }
+       else {
+          Serial3.println("Turning Right");
+          SlowRightTurn();
+        
+       }
+ 
     }
 
 
