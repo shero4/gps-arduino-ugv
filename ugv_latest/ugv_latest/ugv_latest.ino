@@ -98,11 +98,14 @@ void Startup() {
   {
     getGPS();                                        // Update gps data
     Number_of_SATS = (int)(gps.satellites.value());  // Query Tiny GPS for the number of Satellites Acquired
+    Serial3.println(char(Number_of_SATS) + " sats");
     Serial.println(char(Number_of_SATS) + " sats");
     bluetooth();                                     // Check to see if there are any bluetooth commands being received
   }
   Serial.print(Number_of_SATS);
   Serial.println(" Satellites Acquired");
+  Serial3.print(Number_of_SATS);
+  Serial3.println(" Satellites Acquired");
   setWaypoint();  // set intial waypoint to current location
   wpCount = 0;    // zero waypoint counter
   ac = 0;         // zero array counter
@@ -135,17 +138,18 @@ void setup() {
   Serial3.begin(57600); // RFD900
   //  Serial2.begin(38400);  // bluetooth connection
   Serial1.begin(9600);  // GPS serial bus
-
+  
+  Serial3.println("Starting IMU");
   Serial.println("Starting IMU");
   Wire.begin();
   delay(2000);
   mpu.setup(0x68);
-
-  Serial.println("Calibrating IMU");
+  Serial3.println("Calibrating IMU");
+//  Serial.println("Calibrating IMU");
   delay(1000);
   //  mpu.calibrateAccelGyro();
   mpu.calibrateMag();
-  Serial.println("Starting up");
+  Serial3.println("Starting up");
   Startup();
 
 }
@@ -372,7 +376,9 @@ void Compass_Forward() {
 // **********************************************************************************************************************************************************************
 
 void bluetooth() {
-  writeTelemToRFD();
+  if (!Serial3.available()) {
+    writeTelemToRFD();
+  }
   while (Serial3.available())  // Read bluetooth commands over Serial2 // Warning: If an error with Serial2 occurs, make sure Arduino Mega 2560 is Selected
   {
     Serial.print("YO");
@@ -533,24 +539,26 @@ void goWaypoint() {
       break;                                  // Break from Go_Home procedure and send control back to the Void Loop
       // go to next waypoint
     }
-
-
+    Serial.println("$");
+    Serial.println(GPS_Course);
+    Serial.println(compass_heading);
     if (abs(GPS_Course - compass_heading) <= 15)  // If GPS Course and the Compass Heading are within x degrees of each other then go Forward
       // otherwise find the shortest turn radius and turn left or right
     {
       Serial3.println("FORWARD");
-      Forward();  // Go Forward
+//      Forward();  // Go Forward
     } else {
       int x = (GPS_Course - 360);       // x = the GPS desired heading - 360
       int y = (compass_heading - (x));  // y = the Compass heading - x
       int z = (y - 360);                // z = y - 360
+      Serial.println(z);
       if ((z <= 180) && (z >= 0))  // if z is less than 180 and not a negative value then turn left otherwise turn right
       {
         Serial3.println("LEFT");
-        SlowLeftTurn();
+//        SlowLeftTurn();
       } else {
         Serial3.println("RIGHT");
-        SlowRightTurn();
+//        SlowRightTurn();
       }
     }
 
@@ -610,12 +618,19 @@ bool flag = false;
 int a = 0;
 
 void writeTelemToRFD() {
+  Serial3.print("#");
   Serial3.print(Distance_To_Home);
+  Serial3.print("#");
   Serial3.print(GPS_Course);
-  Serial3.print(gps.location.lat());
-  Serial3.print(gps.location.lng());
-  Serial3.print(Home_LATarray[1]);
-  Serial3.print(Home_LONarray[1]);
+  Serial3.print("#");
+  Serial3.print(gps.location.lat(), 6);
+  Serial3.print("#");
+  Serial3.print(gps.location.lng(), 6);
+  Serial3.print("#");
+  Serial3.print(Home_LATarray[1], 6);
+  Serial3.print("#");
+  Serial3.print(Home_LONarray[1], 6);
+  Serial3.print("#");
   Serial3.println(compass_heading);
 }
 
